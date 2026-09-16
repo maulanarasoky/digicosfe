@@ -1,6 +1,6 @@
 import type { TransactionDetails } from "./TransactionDetails";
 
-export interface BookingDetails {
+export interface OrderDetails {
     id: number,
     name: string,
     phone: string,

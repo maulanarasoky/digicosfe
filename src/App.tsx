@@ -3,11 +3,11 @@ import "./App.css";
 import DetailsPage from "./pages/DetailsPage";
 import CategoryPage from "./pages/CategoryPage";
 import MyCartPage from "./pages/MyCartPage";
-import BookingPage from "./pages/BookingPage";
+import OrderPage from "./pages/OrderPage";
 import PaymentPage from "./pages/PaymentPage";
-import BookingFinishedPage from "./pages/BookingFinishedPage";
+import OrderFinishedPage from "./pages/OrderFinishedPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
-import MyBookingDetailsPage from "./pages/MyBookingDetailsPage";
+import MyOrderDetailsPage from "./pages/MyOrderDetailsPage";
 import BrowsePage from "./pages/BrowsePage";
 
 function App() {
@@ -18,11 +18,11 @@ function App() {
         <Route path="/cosmetic/:slug" element={<DetailsPage />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/cart" element={<MyCartPage />} />
-        <Route path="/booking" element={<BookingPage />} />
+        <Route path="/order" element={<OrderPage />} />
         <Route path="/payment" element={<PaymentPage />} />
-        <Route path="/booking-finished" element={<BookingFinishedPage />} />
-        <Route path="/check-booking" element={<MyOrdersPage />} />
-        <Route path="/my-booking" element={<MyBookingDetailsPage />} />
+        <Route path="/order-finished" element={<OrderFinishedPage />} />
+        <Route path="/check-order" element={<MyOrdersPage />} />
+        <Route path="/my-order" element={<MyOrderDetailsPage />} />
       </Routes>
     </BrowserRouter>
   );
