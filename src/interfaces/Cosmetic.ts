@@ -17,5 +17,6 @@ export interface Cosmetic {
     benefits: Benefit[],
     photos: Photo[],
     testimonials: Testimonial[],
+    ratings: number,
     about: string,
 }

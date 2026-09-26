@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
+import HomePage from "./pages/Home/HomePage";
 import DetailsPage from "./pages/DetailsPage";
 import CategoryPage from "./pages/CategoryPage";
 import MyCartPage from "./pages/MyCartPage";
@@ -8,13 +9,12 @@ import PaymentPage from "./pages/PaymentPage";
 import OrderFinishedPage from "./pages/OrderFinishedPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
 import MyOrderDetailsPage from "./pages/MyOrderDetailsPage";
-import BrowsePage from "./pages/BrowsePage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<BrowsePage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/cosmetic/:slug" element={<DetailsPage />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/cart" element={<MyCartPage />} />
