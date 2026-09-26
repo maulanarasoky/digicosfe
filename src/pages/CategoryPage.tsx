@@ -1,10 +1,47 @@
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import type { Category } from "../interfaces/Category";
+import apiClient from "../services/ApiService";
+import { currencyFormatter } from "../utils/Formatter";
+
 export default function CategoryPage() {
+  const STORAGE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
+  const { slug } = useParams<{ slug: string }>();
+  const [category, setCategory] = useState<Category | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    apiClient
+      .get(`/category/${slug}`)
+      .then((response) => {
+        setCategory(response.data.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error);
+        setLoading(false);
+      });
+  }, [slug]);
+
+  if (loading) {
+    return <p>Fetching data...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
+  if (!category) {
+    return <p>Category not found</p>;
+  }
+
   return (
     <main className="mx-auto flex min-h-screen max-w-[640px] flex-col gap-5 bg-[#F6F6F8] pb-[102px]">
       <section id="NavTop" className="mt-5 px-5">
         <div className="flex w-full flex-col gap-5 rounded-3xl bg-white px-3 pb-5 pt-3">
           <div className="flex items-center justify-between">
-            <a href="index.html">
+            <Link to={"/"}>
               <div className="flex size-[44px] shrink-0 items-center justify-center rounded-full border border-cosmetics-greylight">
                 <img
                   src="/assets/images/icons/left.svg"
@@ -12,7 +49,7 @@ export default function CategoryPage() {
                   className="size-5 shrink-0"
                 />
               </div>
-            </a>
+            </Link>
             <div className="flex flex-col gap-[2px]">
               <h1 className="text-center text-lg font-bold leading-[27px]">
                 Category
@@ -35,15 +72,17 @@ export default function CategoryPage() {
             <div className="flex items-center gap-3">
               <div className="flex size-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
                 <img
-                  src="/assets/images/thumbnails/lipsticks.png"
+                  src={`${STORAGE_URL}/${category.photo}`}
                   alt="image"
                   className="h-full w-full object-cover"
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-bold leading-[27px]">Lipsticks</h2>
+                <h2 className="text-lg font-bold leading-[27px]">
+                  {category.name}
+                </h2>
                 <p className="text-sm leading-[21px] text-cosmetics-grey">
-                  18,390 Products
+                  {category.cosmetics_count} Products
                 </p>
               </div>
             </div>
@@ -112,176 +151,48 @@ export default function CategoryPage() {
       </section>
       <section id="ListItems">
         <div className="flex flex-col gap-4 px-5">
-          <a href="details.html">
-            <div className="flex h-[130px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink">
-              <div className="flex h-full w-full hover:h-[calc(100%_-_4px)] hover:w-[calc(100%_-_4px)] transtion-all duration-300 gap-4 rounded-[23px] hover:rounded-[22px] items-center bg-white px-4">
-                <div className="flex size-[90px] shrink-0 items-center justify-center">
-                  <img
-                    src="/assets/images/thumbnails/acne-patch.png"
-                    alt="image"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <div className="flex w-full flex-col gap-[2px]">
-                  <h4 className="text-xs leading-[18px] text-cosmetics-purple">
-                    MAYBELINA
-                  </h4>
-                  <h3 className="line-clamp-2 h-[48px] w-full font-semibold">
-                    Acne Patch Tidak Sakit
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <strong className="font-semibold text-cosmetics-pink">
-                      Rp 8.540.000
-                    </strong>
-                    <div className="flex items-center justify-center gap-[2px]">
+          {category.cosmetics.length > 0 ? (
+            category.cosmetics.map((cosmetic) => (
+              <a href="details.html" key={cosmetic.id}>
+                <div className="flex h-[130px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink">
+                  <div className="flex h-full w-full hover:h-[calc(100%_-_4px)] hover:w-[calc(100%_-_4px)] transtion-all duration-300 gap-4 rounded-[23px] hover:rounded-[22px] items-center bg-white px-4">
+                    <div className="flex size-[90px] shrink-0 items-center justify-center">
                       <img
-                        src="/assets/images/icons/star.svg"
-                        alt="icon"
-                        className="size-4 shrink-0"
+                        src={`${STORAGE_URL}/${cosmetic.thumbnail}`}
+                        alt="image"
+                        className="h-full w-full object-contain"
                       />
-                      <p className="text-xs font-bold leading-[18px]">4.8</p>
+                    </div>
+                    <div className="flex w-full flex-col gap-[2px]">
+                      <h4 className="text-xs leading-[18px] text-cosmetics-purple">
+                        {cosmetic.brand.name.toUpperCase()}
+                      </h4>
+                      <h3 className="line-clamp-2 h-[48px] w-full font-semibold">
+                        {cosmetic.name}
+                      </h3>
+                      <div className="flex items-center justify-between">
+                        <strong className="font-semibold text-cosmetics-pink">
+                          {currencyFormatter(cosmetic.price)}
+                        </strong>
+                        <div className="flex items-center justify-center gap-[2px]">
+                          <img
+                            src="/assets/images/icons/star.svg"
+                            alt="icon"
+                            className="size-4 shrink-0"
+                          />
+                          <p className="text-xs font-bold leading-[18px]">
+                            {cosmetic.ratings}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </a>
-          <a href="details.html">
-            <div className="flex h-[130px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink">
-              <div className="flex h-full w-full hover:h-[calc(100%_-_4px)] hover:w-[calc(100%_-_4px)] transtion-all duration-300 items-center gap-4 rounded-[23px] hover:rounded-[22px] bg-white px-4">
-                <div className="flex size-[90px] shrink-0 items-center justify-center">
-                  <img
-                    src="/assets/images/thumbnails/acne.png"
-                    alt="image"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <div className="flex w-full flex-col gap-[2px]">
-                  <h4 className="text-xs leading-[18px] text-cosmetics-purple">
-                    MAYBELINA
-                  </h4>
-                  <h3 className="line-clamp-2 h-[48px] w-full font-semibold">
-                    Acne Patch Tidak Sakit
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <strong className="font-semibold text-cosmetics-pink">
-                      Rp 8.540.000
-                    </strong>
-                    <div className="flex items-center justify-center gap-[2px]">
-                      <img
-                        src="/assets/images/icons/star.svg"
-                        alt="icon"
-                        className="size-4 shrink-0"
-                      />
-                      <p className="text-xs font-bold leading-[18px]">4.8</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a href="details.html">
-            <div className="flex h-[130px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink">
-              <div className="flex h-full w-full hover:h-[calc(100%_-_4px)] hover:w-[calc(100%_-_4px)] transtion-all duration-300 items-center gap-4 rounded-[23px] hover:rounded-[22px] bg-white px-4">
-                <div className="flex size-[90px] shrink-0 items-center justify-center">
-                  <img
-                    src="/assets/images/thumbnails/bedak.png"
-                    alt="image"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <div className="flex w-full flex-col gap-[2px]">
-                  <h4 className="text-xs leading-[18px] text-cosmetics-purple">
-                    SOMETHINK
-                  </h4>
-                  <h3 className="line-clamp-2 h-[48px] w-full font-semibold">
-                    Bedak Halus Penghilang Jerawat Tanpa Effect
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <strong className="font-semibold text-cosmetics-pink">
-                      Rp 8.540.000
-                    </strong>
-                    <div className="flex items-center justify-center gap-[2px]">
-                      <img
-                        src="/assets/images/icons/star.svg"
-                        alt="icon"
-                        className="size-4 shrink-0"
-                      />
-                      <p className="text-xs font-bold leading-[18px]">4.8</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a href="details.html">
-            <div className="flex h-[130px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink">
-              <div className="flex h-full w-full hover:h-[calc(100%_-_4px)] hover:w-[calc(100%_-_4px)] transtion-all duration-300 items-center gap-4 rounded-[23px] hover:rounded-[22px] bg-white px-4">
-                <div className="flex size-[90px] shrink-0 items-center justify-center">
-                  <img
-                    src="/assets/images/thumbnails/lipstick.png"
-                    alt="image"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <div className="flex w-full flex-col gap-[2px]">
-                  <h4 className="text-xs leading-[18px] text-cosmetics-purple">
-                    MAYBELINA
-                  </h4>
-                  <h3 className="line-clamp-2 h-[48px] w-full font-semibold">
-                    Lipstick Golden Pinky Oil Back to Nature Era Beauty
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <strong className="font-semibold text-cosmetics-pink">
-                      Rp 8.540.000
-                    </strong>
-                    <div className="flex items-center justify-center gap-[2px]">
-                      <img
-                        src="/assets/images/icons/star.svg"
-                        alt="icon"
-                        className="size-4 shrink-0"
-                      />
-                      <p className="text-xs font-bold leading-[18px]">4.8</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-          <a href="details.html">
-            <div className="flex h-[130px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink">
-              <div className="flex h-full w-full hover:h-[calc(100%_-_4px)] hover:w-[calc(100%_-_4px)] transtion-all duration-300 items-center gap-4 rounded-[23px] hover:rounded-[22px] bg-white px-4">
-                <div className="flex size-[90px] shrink-0 items-center justify-center">
-                  <img
-                    src="/assets/images/thumbnails/acne.png"
-                    alt="image"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <div className="flex w-full flex-col gap-[2px]">
-                  <h4 className="text-xs leading-[18px] text-cosmetics-purple">
-                    MAYBELINA
-                  </h4>
-                  <h3 className="line-clamp-2 h-[48px] w-full font-semibold">
-                    Acne Patch Tidak Sakit
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <strong className="font-semibold text-cosmetics-pink">
-                      Rp 8.540.000
-                    </strong>
-                    <div className="flex items-center justify-center gap-[2px]">
-                      <img
-                        src="/assets/images/icons/star.svg"
-                        alt="icon"
-                        className="size-4 shrink-0"
-                      />
-                      <p className="text-xs font-bold leading-[18px]">4.8</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
+              </a>
+            ))
+          ) : (
+            <p>Tidak ada data kosmetik</p>
+          )}
         </div>
       </section>
       <nav className="fixed bottom-5 left-0 right-0 z-30 mx-auto w-full">

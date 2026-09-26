@@ -4,6 +4,7 @@ import type { Category } from "../../interfaces/Category";
 import type { Cosmetic } from "../../interfaces/Cosmetic";
 import apiClient from "../../services/ApiService";
 import { currencyFormatter } from "../../utils/Formatter";
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
   const STORAGE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
@@ -73,7 +74,7 @@ export default function HomePage() {
   }, []);
 
   if (loadingCategories || loadingCosmetics || loadingPopularCosmetics) {
-    return <p>Loading categories and setCosmetics.</p>;
+    return <p>Loading categories and cosmetics...</p>;
   }
 
   if (error) {
@@ -206,7 +207,7 @@ export default function HomePage() {
           <div className="categories-cards grid grid-cols-3 gap-4">
             {categories.length > 0 ? (
               categories.map((category) => (
-                <a href="category.html" key={category.id}>
+                <Link to={`/category/${category.slug}`} key={category.id}>
                   <div className="flex h-[142px] items-center justify-center rounded-3xl bg-cosmetics-greylight p-px transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
                     <div className="flex h-full w-full flex-col justify-center rounded-[23px] bg-white px-[10px] hover:rounded-[22px]">
                       <div className="mx-auto mb-[10px] flex size-[60px] items-center justify-center overflow-hidden rounded-full">
@@ -224,7 +225,7 @@ export default function HomePage() {
                       </p>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))
             ) : (
               <p>Belum ada data kategori</p>
@@ -250,7 +251,10 @@ export default function HomePage() {
               >
                 {popularCosmetics.length > 0 ? (
                   popularCosmetics.map((cosmetic) => (
-                    <SwiperSlide className="swiper-slide !w-fit" key={cosmetic.id}>
+                    <SwiperSlide
+                      className="swiper-slide !w-fit"
+                      key={cosmetic.id}
+                    >
                       <a href="details.html">
                         <div className="relative flex h-[276px] w-[222px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
                           <div className="flex h-full flex-col justify-center gap-4 rounded-[23px] bg-white px-4 hover:rounded-[22px]">
