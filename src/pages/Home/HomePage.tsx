@@ -221,7 +221,7 @@ export default function HomePage() {
                         {category.name}
                       </h3>
                       <p className="text-center text-sm leading-[21px] text-cosmetics-grey">
-                        {category.cosmetics_count} Items
+                        {category.cosmetics_count} Products
                       </p>
                     </div>
                   </div>
@@ -255,7 +255,7 @@ export default function HomePage() {
                       className="swiper-slide !w-fit"
                       key={cosmetic.id}
                     >
-                      <a href="details.html">
+                      <Link to={`/cosmetic/${cosmetic.slug}`}>
                         <div className="relative flex h-[276px] w-[222px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
                           <div className="flex h-full flex-col justify-center gap-4 rounded-[23px] bg-white px-4 hover:rounded-[22px]">
                             <span className="absolute right-[14px] top-[14px] flex items-center justify-center gap-[2px] rounded-full bg-cosmetics-purple px-2 py-[6px]">
@@ -288,7 +288,7 @@ export default function HomePage() {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </SwiperSlide>
                   ))
                 ) : (
@@ -304,7 +304,7 @@ export default function HomePage() {
           <h2 className="font-bold">Fresh This Summer</h2>
           {cosmetics.length > 0 ? (
             cosmetics.map((cosmetic) => (
-              <a href="details.html" key={cosmetic.id}>
+              <Link to={`/cosmetic/${cosmetic.slug}`} key={cosmetic.id}>
                 <div className="flex h-[130px] items-center justify-center rounded-3xl bg-cosmetics-greylight p-px transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
                   <div className="flex h-full w-full items-center gap-4 rounded-[23px] bg-white px-4 hover:rounded-[22px]">
                     <div className="flex size-[90px] shrink-0 items-center justify-center">
@@ -339,7 +339,7 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))
           ) : (
             <p>Belum ada data kosmetik</p>
