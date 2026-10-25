@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import type { Cosmetic } from "../interfaces/Cosmetic";
 import type { CartItem } from "../interfaces/CartItem";
 import apiClient from "../services/ApiService";
+import { currencyFormatter } from "../utils/Formatter";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 export default function DetailsPage() {
   const STORAGE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
@@ -54,7 +56,7 @@ export default function DetailsPage() {
       <section id="NavTop">
         <div className="relative mt-5 px-5">
           <div className="flex w-full items-center justify-between rounded-3xl bg-white px-3 py-3">
-            <a href="index.html">
+            <Link to={"/"}>
               <div className="flex size-[44px] shrink-0 items-center justify-center rounded-full border border-cosmetics-greylight">
                 <img
                   src="/assets/images/icons/left.svg"
@@ -62,7 +64,7 @@ export default function DetailsPage() {
                   className="size-5 shrink-0"
                 />
               </div>
-            </a>
+            </Link>
             <div className="flex flex-col gap-[2px]">
               <h1 className="text-center text-lg font-bold leading-[27px]">
                 Product Details
@@ -89,86 +91,83 @@ export default function DetailsPage() {
             <div className="flex w-full flex-col items-center gap-[30px] rounded-[30px] bg-white px-[24.5px] py-[30px]">
               <div className="flex size-[250px] shrink-0 items-center justify-center">
                 <img
-                  src="/assets/images/thumbnails/thumb1-big.png"
+                  src={`${STORAGE_URL}/${mainImage}`}
                   alt="image"
                   className="h-full w-full object-contain"
                 />
               </div>
               <div className="flex items-center justify-center gap-[4px]">
-                <div className="h-[72px] w-[72px] rounded-full bg-cosmetics-gradient-purple-pink p-[2px] transition-all duration-300">
+                <div
+                  className={`h-[72px] w-[72px] rounded-full 
+                  ${mainImage === cosmetic.thumbnail ? "bg-cosmetics-gradient-purple-pink" : ""}
+                p-[2px] transition-all duration-300`}
+                >
                   <div className="flex h-full w-full items-center justify-center rounded-full bg-white">
                     <div className="flex h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-full">
                       <img
-                        src="/assets/images/thumbnails/thumb1.png"
+                        src={`${STORAGE_URL}/${cosmetic.thumbnail}`}
                         alt="image"
                         className="size-[45px]"
+                        onClick={() => setMainImage(cosmetic.thumbnail)}
                       />
                     </div>
                   </div>
                 </div>
-                <div className="h-[72px] w-[72px] rounded-full bg-cosmetics-gradient-purple-pink p-[2px] transition-all duration-300">
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-white">
-                    <div className="flex h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-full">
-                      <img
-                        src="/assets/images/thumbnails/thumb2.png"
-                        alt="image"
-                        className="size-[45px]"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="h-[72px] w-[72px] rounded-full bg-cosmetics-gradient-purple-pink p-[2px] transition-all duration-300">
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-white">
-                    <div className="flex h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-full">
-                      <img
-                        src="/assets/images/thumbnails/thumb3.png"
-                        alt="image"
-                        className="size-[45px]"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="h-[72px] w-[72px] rounded-full bg-cosmetics-gradient-purple-pink p-[2px] transition-all duration-300">
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-white">
-                    <div className="flex h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-full">
-                      <img
-                        src="/assets/images/thumbnails/thumb4.png"
-                        alt="image"
-                        className="size-[45px]"
-                      />
-                    </div>
-                  </div>
-                </div>
+
+                {cosmetic.photos.length > 0
+                  ? cosmetic.photos.map((photo) => (
+                      <div
+                        className={`h-[72px] w-[72px] rounded-full 
+                        ${mainImage === photo.photo ? "bg-cosmetics-gradient-purple-pink" : ""}
+                      p-[2px] transition-all duration-300`}
+                      >
+                        <div className="flex h-full w-full items-center justify-center rounded-full bg-white">
+                          <div className="flex h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-full">
+                            <img
+                              src={`${STORAGE_URL}/${photo.photo}`}
+                              alt="image"
+                              className="size-[45px]"
+                              onClick={() => setMainImage(photo.photo)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  : ""}
               </div>
             </div>
           </section>
-          <section id="Ads">
-            <div className="px-5">
-              <div className="relative flex items-center gap-[10px] rounded-[20px] bg-[linear-gradient(87deg,_#360CAC_16.85%,_#FF4D9F_81.08%)] px-5 py-[19px]">
-                <img
-                  src="/assets/images/icons/popular.svg"
-                  alt="icon "
-                  className="size-[32px] shrink-0"
-                />
-                <h5 className="text-[18px] font-semibold leading-[27px] text-white">
-                  Popular This Year
-                </h5>
-                <img
-                  src="/assets/images/icons/3-star.svg"
-                  alt="icon"
-                  className="absolute bottom-[3px] right-[21px] h-[68px] w-[132px] shrink-0"
-                />
+          {cosmetic.is_popular ? (
+            <section id="Ads">
+              <div className="px-5">
+                <div className="relative flex items-center gap-[10px] rounded-[20px] bg-[linear-gradient(87deg,_#360CAC_16.85%,_#FF4D9F_81.08%)] px-5 py-[19px]">
+                  <img
+                    src="/assets/images/icons/popular.svg"
+                    alt="icon "
+                    className="size-[32px] shrink-0"
+                  />
+                  <h5 className="text-[18px] font-semibold leading-[27px] text-white">
+                    Popular This Year
+                  </h5>
+                  <img
+                    src="/assets/images/icons/3-star.svg"
+                    alt="icon"
+                    className="absolute bottom-[3px] right-[21px] h-[68px] w-[132px] shrink-0"
+                  />
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          ) : (
+            ""
+          )}
           <header>
             <div className="flex items-center justify-between px-5">
               <div className="flex flex-col gap-1">
                 <h4 className="font-semibold text-cosmetics-purple">
-                  SOOMETHINK
+                  {cosmetic.brand.name.toUpperCase()}
                 </h4>
                 <h1 className="text-[20px] font-bold leading-[30px]">
-                  CoverBlur Powder Foundation Natural
+                  {cosmetic.name}
                 </h1>
               </div>
               <div className="rounded-[16px] bg-cosmetics-purple px-[12px] py-2">
@@ -177,7 +176,7 @@ export default function DetailsPage() {
                   alt="icon"
                   className="mx-auto size-5 shrink-0"
                 />
-                <p className="font-bold text-white">4.8</p>
+                <p className="font-bold text-white">{cosmetic.ratings}</p>
               </div>
             </div>
           </header>
@@ -191,7 +190,7 @@ export default function DetailsPage() {
                 />
                 <div>
                   <h5 className="text-sm font-semibold leading-[21px] text-[#030504]">
-                    Foundation
+                    {cosmetic.category.name}
                   </h5>
                   <p className="text-sm leading-[21px] text-[#43484C]">
                     Category
@@ -248,234 +247,111 @@ export default function DetailsPage() {
           <section id="AboutProduct">
             <div className="flex flex-col gap-2 px-5">
               <h3 className="font-bold">About Product</h3>
-              <p className="leading-[28px]">
-                Cushion dengan kandungan skincare dan coverage tinggi namun
-                terasa puff normal dengan bentuk unik setiap sudut areanya wajah
-                lebih mudah dan merata lorem.
-              </p>
+              <p className="leading-[28px]">{cosmetic.about}</p>
             </div>
           </section>
           <section id="Reviews">
             <div id="ReviewsSlider" className="swiper w-full overflow-x-hidden">
-              <div className="swiper-wrapper">
-                <div className="swiper-slide !w-fit">
-                  <div className="relative flex w-[330px] flex-col gap-4 rounded-3xl bg-white p-[20px]">
-                    <img
-                      src="/assets/images/icons/coma.svg"
-                      alt="icon"
-                      className="absolute left-[17px] top-[16px]"
-                    />
-                    <p className="relative leading-[28px] text-[#030504]">
-                      Perawatan jadi lebih mudah dan murah untuk saya yang lorem
-                      tidak punya waktu dan biaya skincare.
-                    </p>
-                    <div className="relative flex items-center justify-between">
-                      <div className="flex items-center gap-[12px]">
-                        <div className="flex size-[48px] shrink-0 items-center justify-center overflow-hidden rounded-full">
-                          <img
-                            src="/assets/images/photos/people1.png"
-                            alt="image"
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-[#030504]">
-                            Sahina
-                          </h5>
-                          <p className="text-sm leading-[21px] text-cosmetics-grey">
-                            4.8/5
-                          </p>
-                        </div>
-                      </div>
-                      <div className="stars flex items-center">
+              <Swiper
+                className="swipper-wrapper"
+                direction="horizontal"
+                spaceBetween={16}
+                slidesPerView={"auto"}
+                slidesOffsetAfter={20}
+                slidesOffsetBefore={20}
+              >
+                {cosmetic.testimonials.length > 0 ? (
+                  cosmetic.testimonials.map((testimonial) => (
+                    <SwiperSlide
+                      className="swiper-slide !w-fit"
+                      key={testimonial.id}
+                    >
+                      <div className="relative flex w-[330px] flex-col gap-4 rounded-3xl bg-white p-[20px]">
                         <img
-                          src="/assets/images/icons/star-big.svg"
+                          src="/assets/images/icons/coma.svg"
                           alt="icon"
-                          className="size-[20px] shrink-0"
+                          className="absolute left-[17px] top-[16px]"
                         />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="swiper-slide !w-fit">
-                  <div className="relative flex w-[330px] flex-col gap-4 rounded-3xl bg-white p-[20px]">
-                    <img
-                      src="/assets/images/icons/coma.svg"
-                      alt="icon"
-                      className="absolute left-[17px] top-[16px]"
-                    />
-                    <p className="relative leading-[28px] text-[#030504]">
-                      Perawatan jadi lebih mudah dan murah untuk saya yang lorem
-                      tidak punya waktu dan biaya skincare.
-                    </p>
-                    <div className="relative flex items-center justify-between">
-                      <div className="flex items-center gap-[12px]">
-                        <div className="flex size-[48px] shrink-0 items-center justify-center overflow-hidden rounded-full">
-                          <img
-                            src="/assets/images/photos/people2.png"
-                            alt="image"
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-[#030504]">
-                            Masayoshi
-                          </h5>
-                          <p className="text-sm leading-[21px] text-cosmetics-grey">
-                            4.8/5
-                          </p>
+                        <p className="relative leading-[28px] text-[#030504]">
+                          {testimonial.message}
+                        </p>
+                        <div className="relative flex items-center justify-between">
+                          <div className="flex items-center gap-[12px]">
+                            <div className="flex size-[48px] shrink-0 items-center justify-center overflow-hidden rounded-full">
+                              <img
+                                src={`${STORAGE_URL}/${testimonial.photo}`}
+                                alt="image"
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                            <div>
+                              <h5 className="font-semibold text-[#030504]">
+                                {testimonial.name}
+                              </h5>
+                              <p className="text-sm leading-[21px] text-cosmetics-grey">
+                                {testimonial.ratings}/5
+                              </p>
+                            </div>
+                          </div>
+                          <div className="stars flex items-center">
+                            <img
+                              src="/assets/images/icons/star-big.svg"
+                              alt="icon"
+                              className="size-[20px] shrink-0"
+                            />
+                            <img
+                              src="/assets/images/icons/star-big.svg"
+                              alt="icon"
+                              className="size-[20px] shrink-0"
+                            />
+                            <img
+                              src="/assets/images/icons/star-big.svg"
+                              alt="icon"
+                              className="size-[20px] shrink-0"
+                            />
+                            <img
+                              src="/assets/images/icons/star-big.svg"
+                              alt="icon"
+                              className="size-[20px] shrink-0"
+                            />
+                            <img
+                              src="/assets/images/icons/star-big.svg"
+                              alt="icon"
+                              className="size-[20px] shrink-0"
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="stars flex items-center">
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="swiper-slide !w-fit">
-                  <div className="relative flex w-[330px] flex-col gap-4 rounded-3xl bg-white p-[20px]">
-                    <img
-                      src="/assets/images/icons/coma.svg"
-                      alt="icon"
-                      className="absolute left-[17px] top-[16px]"
-                    />
-                    <p className="relative leading-[28px] text-[#030504]">
-                      Perawatan jadi lebih mudah dan murah untuk saya yang lorem
-                      tidak punya waktu dan biaya skincare.
-                    </p>
-                    <div className="relative flex items-center justify-between">
-                      <div className="flex items-center gap-[12px]">
-                        <div className="flex size-[48px] shrink-0 items-center justify-center overflow-hidden rounded-full">
-                          <img
-                            src="/assets/images/photos/people1.png"
-                            alt="image"
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-[#030504]">
-                            Sahina
-                          </h5>
-                          <p className="text-sm leading-[21px] text-cosmetics-grey">
-                            4.8/5
-                          </p>
-                        </div>
-                      </div>
-                      <div className="stars flex items-center">
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                        <img
-                          src="/assets/images/icons/star-big.svg"
-                          alt="icon"
-                          className="size-[20px] shrink-0"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </SwiperSlide>
+                  ))
+                ) : (
+                  <p>No testimonial data found.</p>
+                )}
+              </Swiper>
             </div>
           </section>
           <section id="NaturalBenefits">
             <div className="flex flex-col gap-[14px] px-5 pb-[125px]">
               <h3 className="font-bold">Natural Benefits</h3>
-              <div className="flex items-center gap-3">
-                <img
-                  src="/assets/images/icons/benefit.svg"
-                  alt="icon"
-                  className="size-[32px] shrink-0"
-                />
-                <p className="leading-[28px]">
-                  Kandungan tanpa tambahan toxic sehingga aman untuk jenis
-                  wajahmu
-                </p>
-              </div>
-              <hr className="border-[#E3E3E4]" />
-              <div className="flex items-center gap-3">
-                <img
-                  src="/assets/images/icons/benefit.svg"
-                  alt="icon"
-                  className="size-[32px] shrink-0"
-                />
-                <p className="leading-[28px]">
-                  Tanpa pengawet dan bahan alami demi kesehatan gel dan body
-                  skins
-                </p>
-              </div>
-              <hr className="border-[#E3E3E4]" />
-              <div className="flex items-center gap-3">
-                <img
-                  src="/assets/images/icons/benefit.svg"
-                  alt="icon"
-                  className="size-[32px] shrink-0"
-                />
-                <p className="leading-[28px]">
-                  Kandungan tanpa tambahan toxic sehingga aman untuk jenis
-                  wajahmu
-                </p>
-              </div>
+              {cosmetic.benefits.length > 0 ? (
+                cosmetic.benefits.map((benefit, index) => (
+                  <div className="flex flex-col gap-3" key={benefit.id}>
+                    <div className="flex items-center gap-3">
+                      <img
+                        src="/assets/images/icons/benefit.svg"
+                        alt="icon"
+                        className="size-[32px] shrink-0"
+                      />
+                      <p className="leading-[28px]">{benefit.name}</p>
+                    </div>
+                    {index < cosmetic.benefits.length - 1 && (
+                      <hr className="border-[#E3E3E4]" />
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p>No benefit data found.</p>
+              )}
             </div>
           </section>
         </div>
@@ -483,7 +359,7 @@ export default function DetailsPage() {
           <div className="relative mx-auto flex max-w-[640px] items-center gap-[55px] bg-white p-5">
             <div className="flex flex-col gap-1 text-start">
               <strong className="whitespace-nowrap text-xl font-bold leading-[30px]">
-                Rp 2.560.493
+                {currencyFormatter(cosmetic.price)}
               </strong>
               <p className="text-sm leading-[21px] text-cosmetics-grey">
                 /quantity

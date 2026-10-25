@@ -228,7 +228,7 @@ export default function HomePage() {
                 </Link>
               ))
             ) : (
-              <p>Belum ada data kategori</p>
+              <p>No category data found.</p>
             )}
           </div>
         </div>
@@ -292,7 +292,7 @@ export default function HomePage() {
                     </SwiperSlide>
                   ))
                 ) : (
-                  <p>Belum ada data kosmetik</p>
+                  <p>No cosmetic data found.</p>
                 )}
               </Swiper>
             </div>
@@ -342,7 +342,7 @@ export default function HomePage() {
               </Link>
             ))
           ) : (
-            <p>Belum ada data kosmetik</p>
+            <p>No cosmetic data found.</p>
           )}
         </div>
       </section>

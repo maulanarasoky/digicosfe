@@ -191,7 +191,7 @@ export default function CategoryPage() {
               </Link>
             ))
           ) : (
-            <p>Tidak ada data kosmetik</p>
+            <p>No cosmetic data found.</p>
           )}
         </div>
       </section>
